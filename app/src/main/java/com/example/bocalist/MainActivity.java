@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private Button button;
     private ListView listView;
-    private ArrayAdapter adapter;
+    private ArrayAdapter<String> adapter;
     private ArrayList<String> dates;
 
     @Override
@@ -87,8 +87,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 scanner.next();
                 scanner.next();
                 String x = scanner.next();
-                if(x.split(">", 2)[0].contains("center"))
+                if(x.contains("><")) {
+                    System.out.println("Empty");
                     continue;
+                }
                 date = date.concat(x.split(">", 2)[1] +" ");
                 date = date.concat(scanner.next());
                 date = date.concat(scanner.next().split("<", 2)[0] + " | Time: ");
@@ -124,11 +126,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.button:
-                button.setEnabled(false);
-                update();
-                break;
+        if (view.getId() == R.id.button) {
+            button.setEnabled(false);
+            update();
         }
     }
 }
