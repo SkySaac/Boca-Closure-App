@@ -38,10 +38,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         button.setOnClickListener(this);
 
+        button.setEnabled(false);
         update();
     }
 
     public void update() {
+        adapter.clear();
         new Thread(new Runnable() {
             public void run() {
                 try {
@@ -49,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     runOnUiThread(new Runnable() {
                         public void run() {
                             adapter.notifyDataSetChanged();
+                            button.setEnabled(true);
                         }
                     });
                 } catch (Exception e) {
@@ -72,10 +75,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } catch (IOException e) {
             System.out.println("IO stuff");
         }
-        String content = "";
+        String content;
         while (scanner.hasNext()) {
             content = scanner.next();
-            String date = "";
+            String date;
             if (content.startsWith("<tr>")) {
                 content = scanner.next();
                 if (content.contains("<td")) date = content.split(">", 2)[1] + " ";
@@ -83,7 +86,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 date = date.concat(scanner.next().split("<", 2)[0] + " | Date: ");
                 scanner.next();
                 scanner.next();
-                date = date.concat(scanner.next().split(">", 2)[1] + " ");
+                String x = scanner.next();
+                if(x.split(">", 2)[0].contains("center"))
+                    continue;
+                date = date.concat(x.split(">", 2)[1] +" ");
                 date = date.concat(scanner.next());
                 date = date.concat(scanner.next().split("<", 2)[0] + " | Time: ");
                 scanner.next();
@@ -104,6 +110,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
         scanner.close();
+        if(dates.size()==0){
+            dates.add("No closures found.");
+        }
         System.out.println("Data found:" + dates.size());
     }
 
@@ -117,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.button:
+                button.setEnabled(false);
                 update();
                 break;
         }
