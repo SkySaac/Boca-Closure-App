@@ -77,34 +77,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         String content;
         while (scanner.hasNext()) {
-            content = scanner.next();
+            content = scanner.nextLine();
             String date;
             if (content.startsWith("<tr>")) {
-                content = scanner.next();
-                if (content.contains("<td")) date = content.split(">", 2)[1] + " ";
+                content = scanner.nextLine();
+                if (content.contains("<td")) date = (content.split(">", 2)[1]).split("<",2)[0] + " | Date: ";
                 else continue;
-                date = date.concat(scanner.next().split("<", 2)[0] + " | Date: ");
-                scanner.next();
-                scanner.next();
-                String x = scanner.next();
-                if(x.contains("><")) {
-                    System.out.println("Empty");
-                    continue;
-                }
-                date = date.concat(x.split(">", 2)[1] +" ");
-                date = date.concat(scanner.next());
-                date = date.concat(scanner.next().split("<", 2)[0] + " | Time: ");
-                scanner.next();
-                scanner.next();
-                date = date.concat(scanner.next().split(">", 2)[1] + " ");
-                date = date.concat(scanner.next() + " - ");
-                scanner.next();
-                date = date.concat(scanner.next() + " ");
-                date = date.concat(scanner.next().split("<", 2)[0] + " | Status: ");
-                scanner.next();
-                scanner.next();
-                date = date.concat(scanner.next().split(">", 2)[1] + " ");
-                date = date.concat(scanner.next().split("<", 2)[0]);
+
+                content = scanner.nextLine();
+                if(content.contains("><"))continue;
+
+                date = date.concat((content.split(">", 2)[1]).split("<",2)[0] + " | Time: ");
+                date = date.concat((scanner.nextLine().split(">", 2)[1]).split("<",2)[0] + " | Status: ");
+                date = date.concat((scanner.nextLine().split(">", 2)[1]).split("<",2)[0]);
 
                 System.out.println("Date: " + date);
 
