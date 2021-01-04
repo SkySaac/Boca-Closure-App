@@ -47,7 +47,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    getInfos();
+                    getClosureInfos();
+                    getNotamInfos();
                     runOnUiThread(new Runnable() {
                         public void run() {
                             adapter.notifyDataSetChanged();
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }).start();
     }
 
-    public void getInfos() {
+    public void getClosureInfos() {
         Scanner scanner = null;
         dates.clear();
         try {
@@ -99,6 +100,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         scanner.close();
         if(dates.size()==0){
             dates.add("No closures found.");
+        }
+        System.out.println("Data found:" + dates.size());
+    }
+
+    public void getNotamInfos() {
+        Scanner scanner = null;
+        try {
+            System.out.println("Trying to get the url");
+            URL url = new URL("https://tfr.faa.gov/tfr2/list.jsp");
+            System.out.println("Trying to open stream");
+            InputStream ip = url.openStream();
+            scanner = new Scanner(ip);
+        } catch (MalformedURLException e) {
+            System.out.println("URL wrong NOTAM");
+        } catch (IOException e) {
+            System.out.println("IO stuff NOTAM");
+        }
+        String content;
+        while (scanner.hasNext()) {
+            content = scanner.nextLine();
+            String date;
+            if (content.contains("SPACE OPERATIONS</a>")) {
+                scanner.nextLine(); scanner.nextLine();
+                content = scanner.nextLine();
+                if (!content.contains("BROWNSVILLE")) continue;
+                String furtherInfo = "https://tfr.faa.gov"+ content.split("..",2)[1].split(".html")[0];
+                content = content.split(">",2)[1];
+                date= content;
+                dates.add("ACTIVE NOTAM: "+date);
+            }
+        }
+        scanner.close();
+        if(dates.size()==0){
+            dates.add("No data found.");
         }
         System.out.println("Data found:" + dates.size());
     }
